@@ -61,7 +61,7 @@ def main():
     }
 
     r = problem_methods[problem][method]()
-    print(f"Best Solution: {r}" f"Problem: {problem}" f"Method: {method}")
+    print(f"Best Solution: {r}\n" f"Problem: {problem}\n" f"Method: {method}")
 
 
 main()
