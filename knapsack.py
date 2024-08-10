@@ -2,7 +2,7 @@ from copy import deepcopy
 import numpy as np
 import random
 import math
-
+from tqdm import tqdm
 
 def read_input(filename):
     with open(filename, "r") as file:
@@ -151,20 +151,21 @@ class Knapsack:
 
         return s_best, c_best, v_best
 
-    def acceptance_probability(self, current_value, new_value, temperature):
-        result = math.exp((new_value - current_value) / temperature)
-        result = round(result, 5)
+    def acceptance_probability(self, current_value, neighbour_value, temperature):
+        result = math.exp((neighbour_value - current_value) / temperature)
+        result = round(result, 10)
         return result
 
     def simulated_annealing(
         self,
-        initial_temperature=10000,
+        initial_temperature=1000000,
         cooling_rate=0.999,
         stopping_temperature=0.001,
         max_iterations=200,
     ):
 
         current_sol, current_weight, current_value = self.get_initial_solution()
+        print(current_sol, current_weight, current_value)
         best_sol = current_sol[:]
         best_weight = current_weight
         best_value = current_value
@@ -172,27 +173,28 @@ class Knapsack:
         temperature = initial_temperature
         iteration = 0
 
-        while temperature > stopping_temperature:
-            while iteration < max_iterations:
-                rand_int = random.randint(0, self.knapsack_length - 1)
-                neighbour_path = current_sol[:]
-                neighbour_path[rand_int] = self.flip(current_sol[rand_int])
-                neighbour_weight = self.get_solution_weight(neighbour_path)
-                neighbour_value = self.get_solution_value(neighbour_path)
-                # print(f"{neighbour_value} || {neighbour_weight}")
+        with tqdm(total=temperature) as pbar:
+            while temperature > stopping_temperature:
+                while iteration < max_iterations:
+                    rand_int = random.randint(0, self.knapsack_length - 1)
+                    neighbour_path = current_sol[:]
+                    neighbour_path[rand_int] = self.flip(current_sol[rand_int])
+                    neighbour_weight = self.get_solution_weight(neighbour_path)
+                    neighbour_value = self.get_solution_value(neighbour_path)
+                    #print(f"{neighbour_value} || {neighbour_weight}")
 
-                if neighbour_weight <= self.max_weight:
-                    if neighbour_value > current_value:
-                        current_sol = neighbour_path[:]
-                        current_value = neighbour_value
-                        current_weight = neighbour_weight
+                    if neighbour_weight <= self.max_weight:
+                        print("passed")
+                        if neighbour_value > current_value:
+                            current_sol = neighbour_path[:]
+                            current_value = neighbour_value
+                            current_weight = neighbour_weight
 
-                        if neighbour_value > best_value:
-                            best_value = neighbour_value
-                            best_sol = neighbour_path[:]
-                            best_weight = neighbour_weight
+                            if neighbour_value > best_value:
+                                best_value = neighbour_value
+                                best_sol = neighbour_path[:]
+                                best_weight = neighbour_weight
 
-                else:
                     acceptance = self.acceptance_probability(
                         current_value, neighbour_value, temperature
                     )
@@ -201,9 +203,11 @@ class Knapsack:
                         current_weight = neighbour_weight
                         current_value = neighbour_value
 
-                iteration += 1
+                    iteration += 1
 
-            temperature *= cooling_rate
-            iteration = 0
+                previous = temperature
+                temperature *= cooling_rate
+                pbar.update(previous - temperature)
+                iteration = 0
 
         return best_sol, best_weight, best_value
