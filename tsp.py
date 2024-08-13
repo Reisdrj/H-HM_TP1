@@ -45,7 +45,6 @@ class TSP:
         total = 0
         for i in range(self.num_cities):
             total += self.distances[path[i]][path[(i + 1) % self.num_cities]]
-        # print(f'{total}\n')
         return total
 
     def acceptance_probability(self, current_distance, new_distance, temperature):
@@ -63,7 +62,6 @@ class TSP:
         current_path = self.initial_solution()
         best_path = current_path[:]
         current_distance = self.total_distance(current_path)
-        print(current_path, current_distance)
         best_distance = current_distance
 
         temperature = initial_temperature
