@@ -42,7 +42,6 @@ class Knapsack:
         max_weight,
     ):
 
-        # Knapsack
 
         self.initial_solution = initial_solution[:]
         self.initial_cost = initial_cost
@@ -52,7 +51,6 @@ class Knapsack:
         self.items = items
         self.knapsack_length = len(items)
 
-    # Knapsack
 
     def flip(self, pos):
         if pos == 1:
@@ -166,7 +164,6 @@ class Knapsack:
     ):
 
         current_sol, current_weight, current_value = self.get_initial_solution()
-        print(current_sol, current_weight, current_value)
         best_sol = current_sol[:]
         best_weight = current_weight
         best_value = current_value
