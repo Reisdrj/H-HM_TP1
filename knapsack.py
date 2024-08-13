@@ -4,6 +4,7 @@ import random
 import math
 from tqdm import tqdm
 
+
 def read_input(filename):
     with open(filename, "r") as file:
         length, weight = [int(i) for i in file.readline().strip().split()]
@@ -173,39 +174,36 @@ class Knapsack:
         temperature = initial_temperature
         iteration = 0
 
-        with tqdm(total=temperature) as pbar:
-            while temperature > stopping_temperature:
-                while iteration < max_iterations:
-                    rand_int = random.randint(0, self.knapsack_length - 1)
-                    neighbour_path = current_sol[:]
-                    neighbour_path[rand_int] = self.flip(current_sol[rand_int])
-                    neighbour_weight = self.get_solution_weight(neighbour_path)
-                    neighbour_value = self.get_solution_value(neighbour_path)
+        while temperature > stopping_temperature:
+            while iteration < max_iterations:
+                rand_int = random.randint(0, self.knapsack_length - 1)
+                neighbour_path = current_sol[:]
+                neighbour_path[rand_int] = self.flip(current_sol[rand_int])
+                neighbour_weight = self.get_solution_weight(neighbour_path)
+                neighbour_value = self.get_solution_value(neighbour_path)
 
-                    if neighbour_weight <= self.max_weight:
-                        if neighbour_value > current_value:
+                if neighbour_weight <= self.max_weight:
+                    if neighbour_value > current_value:
+                        current_sol = neighbour_path[:]
+                        current_value = neighbour_value
+                        current_weight = neighbour_weight
+
+                        if neighbour_value > best_value:
+                            best_value = neighbour_value
+                            best_sol = neighbour_path[:]
+                            best_weight = neighbour_weight
+                    else:
+                        acceptance = self.acceptance_probability(
+                            current_value, neighbour_value, temperature
+                        )
+                        if acceptance > random.random():
                             current_sol = neighbour_path[:]
-                            current_value = neighbour_value
                             current_weight = neighbour_weight
+                            current_value = neighbour_value
 
-                            if neighbour_value > best_value:
-                                best_value = neighbour_value
-                                best_sol = neighbour_path[:]
-                                best_weight = neighbour_weight
-                        else:
-                            acceptance = self.acceptance_probability(
-                                current_value, neighbour_value, temperature
-                            )
-                            if acceptance > random.random():
-                                current_sol = neighbour_path[:]
-                                current_weight = neighbour_weight
-                                current_value = neighbour_value
+                iteration += 1
 
-                    iteration += 1
-
-                previous = temperature
-                temperature *= cooling_rate
-                pbar.update(previous - temperature)
-                iteration = 0
+            temperature *= cooling_rate
+            iteration = 0
 
         return best_sol, best_weight, best_value
