@@ -158,7 +158,7 @@ class Knapsack:
 
     def simulated_annealing(
         self,
-        initial_temperature=1000000,
+        initial_temperature=1000,
         cooling_rate=0.999,
         stopping_temperature=0.001,
         max_iterations=200,
@@ -181,10 +181,8 @@ class Knapsack:
                     neighbour_path[rand_int] = self.flip(current_sol[rand_int])
                     neighbour_weight = self.get_solution_weight(neighbour_path)
                     neighbour_value = self.get_solution_value(neighbour_path)
-                    #print(f"{neighbour_value} || {neighbour_weight}")
 
                     if neighbour_weight <= self.max_weight:
-                        print("passed")
                         if neighbour_value > current_value:
                             current_sol = neighbour_path[:]
                             current_value = neighbour_value
@@ -194,14 +192,14 @@ class Knapsack:
                                 best_value = neighbour_value
                                 best_sol = neighbour_path[:]
                                 best_weight = neighbour_weight
-
-                    acceptance = self.acceptance_probability(
-                        current_value, neighbour_value, temperature
-                    )
-                    if acceptance > random.random():
-                        current_sol = neighbour_path[:]
-                        current_weight = neighbour_weight
-                        current_value = neighbour_value
+                        else:
+                            acceptance = self.acceptance_probability(
+                                current_value, neighbour_value, temperature
+                            )
+                            if acceptance > random.random():
+                                current_sol = neighbour_path[:]
+                                current_weight = neighbour_weight
+                                current_value = neighbour_value
 
                     iteration += 1
 
